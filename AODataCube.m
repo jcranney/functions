@@ -1,6 +1,7 @@
 classdef AODataCube
     properties
         n
+        m
         z
         cube
         thresh
@@ -8,12 +9,45 @@ classdef AODataCube
     methods
         function obj = AODataCube(cube)
             obj.cube = cube;
-            obj.n = size(cube,1);
-            if size(cube,1) ~= size(cube,2)
-                error('1st and 2nd dimension of datacube must be equal')
+            [m,n,z] = size(cube);
+            obj.n = n; % Width
+            obj.m = m; % Height
+            if m ~= n
+                warning('1st and 2nd dimension of datacube are preferably equal')
             end
-            obj.z = size(cube,3);
+            obj.z = z;
             obj.thresh = 1e-5;
+        end
+        function cube2gif(obj,name,delay)
+            % This is pretty self explanatory and does most of the work for
+            % you. Just call this function from your datacube with a name
+            % string and delay in seconds. For example, for a 10fps gif on
+            % the datacube 'dc', with a filename of 'animation.gif', you
+            % would call:
+            %    dc.cube2gif('animation',0.1);
+            % And the file 'animation.gif' will appear in whatever
+            % directory you run the command from. If you would like to
+            % reshape the size of the gif from the defaults, then open
+            % figure(1) and adjust to your preference before running the
+            % command.
+            % For more flexibility (and more work), use the function:
+            % frames2gif(...)
+            
+            figure(1)
+            fr = [];
+            min_c = min(obj);
+            max_c = max(obj);
+            for zi = 1:obj.z
+                imagesc(obj.cube(:,:,zi))
+                set(gca,'YTickLabel','')
+                set(gca,'XTickLabel','')
+                axis equal
+                axis([0.5 obj.n+0.5 0.5 obj.m+0.5])
+                caxis([min_c max_c])
+                colorbar
+                fr = [fr getframe(gcf)];
+            end
+            frames2gif(fr,name,delay);
         end
         function out = mean(obj)
             out = mean(obj.cube(:));
