@@ -5,7 +5,18 @@ function frames2gif(fr,filename,varargin)
 %   FRAMES2GIF(FR,FILENAME) writes FR to FILENAME with delay of 0.5
 %   FRAMES2GIF(FR,FILENAME,DELAY) writes FR to FILENAME with DELAY
 %
+% Usage:
+% fr = [];
+% for ni = 1:100
+%   scatter(rand,rand);
+%   hold on
+%   fr = [fr getframe(gcf)];
+% end
+% frames2gif(fr,'example',0.05);
+%
+%
 % Jesse Cranney, 2016
+
 if nargin == 3
     delay = varargin{1};
 else
